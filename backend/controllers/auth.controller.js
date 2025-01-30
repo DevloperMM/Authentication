@@ -17,6 +17,9 @@ export const signup = async (req, res) => {
     if (!(email && name && password))
       throw new ApiError(400, "All fields are required");
 
+    if (password.length < 6)
+      throw new ApiError(403, "Password must have atleast 6 characters");
+
     const isUser = await User.findOne({ email });
     if (isUser) throw new ApiError(400, "This email is already registered");
 
@@ -44,7 +47,6 @@ export const signup = async (req, res) => {
       user: { ...user._doc, password: undefined },
     });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",
@@ -78,7 +80,6 @@ export const verifyEmail = async (req, res) => {
       user: { ...user._doc, password: undefined },
     });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",
@@ -105,7 +106,6 @@ export const login = async (req, res) => {
       user: { ...user._doc, password: undefined },
     });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",
@@ -146,7 +146,6 @@ export const forgotPassword = async (req, res) => {
       message: "Password reset link sent to your email",
     });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",
@@ -183,7 +182,6 @@ export const resetPassword = async (req, res) => {
       message: "Password reset successful",
     });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",
@@ -200,7 +198,6 @@ export const checkAuth = async (req, res) => {
       .status(200)
       .json({ success: true, user: { ...user._doc, password: undefined } });
   } catch (err) {
-    console.log(err);
     return res.status(err?.code || 500).json({
       success: false,
       msg: err?.msg || "Internal Server Error",

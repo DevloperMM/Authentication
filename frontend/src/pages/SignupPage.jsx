@@ -4,19 +4,18 @@ import { motion } from "framer-motion";
 import { Loader, Lock, Mail, User } from "lucide-react";
 import Input from "../components/Input.jsx";
 import PasswordMeter from "../components/PasswordMeter.jsx";
+import { useAuthStore } from "../store/authStore.js";
 
 function SignupPage() {
-  const [authData, setAuthData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const isLoading = false;
+  const { signup, isLoading, error } = useAuthStore();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
-    console.log("signed up");
+    await signup(name, email, password);
   };
 
   return (
@@ -36,29 +35,26 @@ function SignupPage() {
             icon={User}
             type="text"
             placeholder="Full Name"
-            value={authData.name}
-            onChange={(e) => setAuthData({ ...authData, name: e.target.value })}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
           <Input
             icon={Mail}
             type="email"
             placeholder="Email Address"
-            value={authData.email}
-            onChange={(e) =>
-              setAuthData({ ...authData, email: e.target.value })
-            }
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
           <Input
             icon={Lock}
             type="password"
             placeholder="Password"
-            value={authData.password}
-            onChange={(e) =>
-              setAuthData({ ...authData, password: e.target.value })
-            }
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
-          <PasswordMeter password={authData.password} />
+          {error && <p className="text-red-700 font-semibold my-2">{error}</p>}
+          <PasswordMeter password={password} />
 
           <motion.button
             className="mt-5 w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
@@ -68,7 +64,10 @@ function SignupPage() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader className=" animate-spin mx-auto" size={24} />
+              <>
+                <Loader className=" animate-spin mx-auto" size={24} />{" "}
+                "Processing.."
+              </>
             ) : (
               "Sign Up"
             )}
